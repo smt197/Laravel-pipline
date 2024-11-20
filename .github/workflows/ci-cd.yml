@@ -3,10 +3,10 @@ name: Laravel CI/CD Pipeline
 on:
   push:
     branches:
-      - master  # Trigger la pipeline sur les pushes vers la branche main
+      - master  # Trigger la pipeline sur les pushes vers la branche master
   pull_request:
     branches:
-      - master  # Trigger également sur les pull requests vers la branche main
+      - master  # Trigger également sur les pull requests vers la branche master
 
 jobs:
   # Job pour les tests
@@ -17,8 +17,8 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: test_db
+          MYSQL_ROOT_PASSWORD: smtAdmin
+          MYSQL_DATABASE: laravel-ci-cd
         ports:
           - 3306:3306
         options: >-
@@ -41,6 +41,23 @@ jobs:
       - name: Install dependencies via Composer
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
+      # Ajout d'un délai d'attente pour garantir que MySQL est prêt
+      - name: Wait for MySQL
+        run: |
+          echo "Waiting for MySQL to be ready..."
+          until mysqladmin ping -h 127.0.0.1 --silent; do
+            echo "Still waiting for MySQL...";
+            sleep 5;
+          done
+          echo "MySQL is up and running!"
+
+      # Vérification manuelle de la connexion MySQL (pour debug)
+      - name: Test MySQL connection
+        run: |
+          echo "Testing MySQL connection..."
+          mysql -h 127.0.0.1 -u smtAdmin -pSerigne@123 -e "SHOW DATABASES;"
+
+      # Exécution des migrations avec plus de logs pour le debug
       - name: Run migrations
         env:
           DB_CONNECTION: mysql
@@ -49,7 +66,7 @@ jobs:
           DB_DATABASE: laravel-ci-cd
           DB_USERNAME: smtAdmin
           DB_PASSWORD: Serigne@123
-        run: php artisan migrate --seed
+        run: php artisan migrate --seed -vvv
 
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit --testdox
