@@ -17,7 +17,7 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_ROOT_PASSWORD: smtAdmin
+          MYSQL_ROOT_PASSWORD: Serigne@123
           MYSQL_DATABASE: laravel-ci-cd
         ports:
           - 3306:3306
