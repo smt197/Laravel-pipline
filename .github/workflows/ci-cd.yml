@@ -3,10 +3,10 @@ name: Laravel CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Trigger la pipeline sur les pushes vers la branche main
+      - master  # Trigger la pipeline sur les pushes vers la branche main
   pull_request:
     branches:
-      - main  # Trigger également sur les pull requests vers la branche main
+      - master  # Trigger également sur les pull requests vers la branche main
 
 jobs:
   # Job pour les tests
